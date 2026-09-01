@@ -34,8 +34,8 @@ button{ font-family:inherit }
    oversize, cover, centered) so tile and hero are structurally identical */
 #iworld .t .part{ position:absolute; left:-6%; top:-6%; width:112%; height:112%;
   background-size:cover; background-position:center }
-#pct{ position:fixed; left:50%; bottom:6vmin; transform:translateX(-50%); z-index:81;
-  font-family:"Fraunces",serif; font-size:1rem; letter-spacing:.08em;
+#pct{ position:fixed; left:50%; top:50%; transform:translate(-50%,-50%); z-index:81;
+  font-family:"Fraunces",serif; font-size:clamp(1.2rem,2.6vmin,2rem); letter-spacing:.08em;
   font-variant-numeric:tabular-nums; mix-blend-mode:difference; transition:opacity 300ms }
 
 /* ---------- collage strip ---------- */
@@ -300,7 +300,7 @@ const SLIDERS=[
   ["introHoldMs","Hold on grid ms",0,2000,50],
   ["introZoomMs","Ken Burns ms",800,6000,100],
   ["spreadTiles","Start spread",0,3,0.05],
-  ["rowStaggerMs","Row stagger ms",0,1200,20],
+  ["rowStaggerMs","Column stagger ms",0,1200,20],
   ["zoomStartAt","KB starts at (of slide)",0,1,0.05],
   ["smooth","Smoothness",0.5,2,0.05],
 ];
@@ -311,8 +311,7 @@ CFG.tileCurve=(CFG.tileCurve||DEFAULTS.tileCurve).map(p=>[...p]);
 CFG.kbCurve=(CFG.kbCurve||DEFAULTS.kbCurve).map(p=>[...p]);
 function saveCFG(){ try{localStorage.setItem("feel-v12",JSON.stringify(CFG));}catch(e){} }
 const panel=document.getElementById("panel"), pBodyEl=document.getElementById("panelBody");
-/* production: the Feel tuning panel stays hidden unless the site is opened
-   with ?feel — visitors never see it, Jesse can still tune live. */
+/* production: hidden unless ?feel */
 if(!/[?&]feel\b/.test(location.search)) panel.style.display="none";
 const sliderRefs={};
 SLIDERS.forEach(def=>{
@@ -711,49 +710,55 @@ const tiles=[]; let focal=null;
   const tileW=vw/4.6, tileH=vh/4.6;
   const gap=(vh-ROWS*tileH)/(ROWS+1);
   const pitch=tileW+gap;
-  /* PASS 1 — lay out the grid (one cover row above and below, so the
+  /* VERTICAL choreography: the wall is organized in COLUMNS. Even columns
+     pour in from the top, odd columns rise from the bottom; within a
+     column the queue starts stretched out and compresses to exact pitch
+     as it lands (the same uneven -> even signature, transposed). Columns
+     are brick-staggered by half a tile vertically. */
+  const pitchY=tileH+gap;
+  /* PASS 1 — lay out the grid (one cover column each side, so the
      centering shift can never expose bare background at an edge) and pick
      the tile nearest the viewport center as the focal. */
   let li=0, best=1e9;
-  const rowsArr=[];
-  for(let r=-1;r<=ROWS;r++){
-    const dir=(((r%2)+2)%2===0)?-1:1;  /* even rows enter from the left, odd from right */
-    const y=gap+r*(tileH+gap);
-    const brick=(((r%2)+2)%2)*pitch/2;
-    const row=[];
-    for(let k=-2;k*pitch+brick<vw+tileW;k++){
-      const fx=k*pitch+brick;
+  const colsArr=[];
+  for(let c=-1;gap+c*pitch<vw+tileW;c++){
+    const dir=(((c%2)+2)%2===0)?-1:1;  /* even columns from the top, odd from the bottom */
+    const x=gap+c*pitch;
+    const brick=(((c%2)+2)%2)*pitchY/2;
+    const col=[];
+    for(let k=-2;k*pitchY+brick<vh+tileH;k++){
+      const fy=k*pitchY+brick;
       const t=document.createElement("div");
       t.className="t";
       iworld.appendChild(t);
-      const rec={el:t,fx,y,dir,row:r};
-      row.push(rec); tiles.push(rec);
-      const d=Math.hypot(fx+tileW/2-vw/2,y+tileH/2-vh*.5);
+      const rec={el:t,x,fy,dir,col:c};
+      col.push(rec); tiles.push(rec);
+      const d=Math.hypot(x+tileW/2-vw/2,fy+tileH/2-vh*.5);
       if(d<best){best=d;focal=rec;}
     }
-    rowsArr.push({row,dir,r});
+    colsArr.push({col,dir,c});
   }
   /* PASS 2 — shift the WHOLE wall so the focal tile's final rect sits
      EXACTLY at the viewport center. The Ken Burns then becomes a pure
-     centered scale: the image the camera dives into never drifts sideways
+     centered scale: the image the camera dives into never drifts
      on its way to full-bleed. */
-  const dxC=vw/2-(focal.fx+tileW/2);
-  const dyC=vh/2-(focal.y+tileH/2);
+  const dxC=vw/2-(focal.x+tileW/2);
+  const dyC=vh/2-(focal.fy+tileH/2);
   tiles.forEach(rec=>{
-    rec.fx+=dxC; rec.y+=dyC;
-    Object.assign(rec.el.style,{top:rec.y+"px",left:"0px",width:tileW+"px",height:tileH+"px",opacity:"0"});
+    rec.x+=dxC; rec.fy+=dyC;
+    Object.assign(rec.el.style,{left:rec.x+"px",top:"0px",width:tileW+"px",height:tileH+"px",opacity:"0"});
   });
-  /* PASS 3 — per-row travel distances (computed AFTER the shift):
+  /* PASS 3 — per-column travel distances (computed AFTER the shift):
      leader clears the screen, the queue trails with extra spacing that
      melts away as they land: start gap = pitch+spread -> final gap = pitch */
-  rowsArr.forEach(({row,dir,r})=>{
-    row.sort((a,b)=> dir<0 ? b.fx-a.fx : a.fx-b.fx);   /* rank 0 = leader */
-    const spread=pitch*CFG.spreadTiles;
-    const leader=row[0];
-    const base=(dir<0 ? leader.fx+tileW+gap : vw-leader.fx+gap) + vw*.02;
-    row.forEach((rec,rank)=>{
+  colsArr.forEach(({col,dir,c})=>{
+    col.sort((a,b)=> dir<0 ? b.fy-a.fy : a.fy-b.fy);   /* rank 0 = leader */
+    const spread=pitchY*CFG.spreadTiles;
+    const leader=col[0];
+    const base=(dir<0 ? leader.fy+tileH+gap : vh-leader.fy+gap) + vh*.02;
+    col.forEach((rec,rank)=>{
       rec.S = base + rank*spread;
-      rec.rowDelay = (r+1)*CFG.rowStaggerMs;
+      rec.rowDelay = (c+1)*CFG.rowStaggerMs;
     });
   });
   tiles.forEach(rec=>{
@@ -767,7 +772,7 @@ const tiles=[]; let focal=null;
       rec.el.style.backgroundImage=`url('${WALL[li++%WALL.length]}')`;
     }
   });
-  focal.rect={x:focal.fx,y:focal.y,w:tileW,h:tileH};
+  focal.rect={x:focal.x,y:focal.fy,w:tileW,h:tileH};
 })();
 const cam={s:1,tx:0,ty:0,sT:1,txT:0,tyT:0};
 /* camera target: map the focal tile's FINAL rect exactly onto the viewport
@@ -789,14 +794,22 @@ focusEl.style.visibility="hidden";       /* until its row starts moving */
    ready, with a hard cap so a broken file can never stall the site. */
 let introStart=performance.now(), introReady=false;
 {
+  /* the centered counter shows REAL load progress, quantized to jumps of
+     17 so it snaps upward instead of crawling — and nothing on the wall
+     moves until every image is decoded (hard 3s cap). */
   const urls=[...new Set(WALL)];
+  let done=0;
+  const show=()=>{ pctEl.textContent=Math.min(100,Math.ceil(done/urls.length*100/17)*17)+"%"; };
+  show();
   const ps=urls.map(u=>new Promise(res=>{
     const im=new Image();
-    im.onload=()=>{ (im.decode?im.decode().catch(()=>{}):Promise.resolve()).then(res); };
-    im.onerror=res; im.src=u;
+    const fin=()=>{ done++; show(); res(); };
+    im.onload=()=>{ (im.decode?im.decode().catch(()=>{}):Promise.resolve()).then(fin); };
+    im.onerror=fin; im.src=u;
   }));
   Promise.race([Promise.all(ps), new Promise(r=>setTimeout(r,3000))])
-    .then(()=>{ introReady=true; });
+    .then(()=>{ pctEl.textContent="100%"; introReady=true;
+      setTimeout(()=>pctEl.style.opacity=0,250); });
 }
 
 /* ============ minimap ============ */
@@ -866,19 +879,17 @@ function frame(now){
   if(mode==="intro"){
     if(!introReady)introStart=now;       /* hold at t=0 until images decoded */
     const tAbs=now-introStart;
-    pctEl.textContent=Math.min(100,Math.floor(tAbs/(CFG.introBlankMs+CFG.introLoadMs)*100))+"%";
-    if(tAbs>=CFG.introBlankMs+CFG.introLoadMs)pctEl.style.opacity=0;
     tiles.forEach(rec=>{
       if(rec===focal)return;             /* the hero plays the focal tile */
       const lp=(tAbs-CFG.introBlankMs-rec.rowDelay)/Math.max(200,CFG.introLoadMs-rec.rowDelay);
       const e=reduced?1:tileEase(lp);
       rec.el.style.opacity=(reduced||lp>0)?"1":"0";
-      rec.el.style.transform=`translate3d(${rec.fx+rec.dir*rec.S*(1-e)}px,0,0)`;
+      rec.el.style.transform=`translate3d(0,${rec.fy+rec.dir*rec.S*(1-e)}px,0)`;
     });
     /* focal tile position by the SAME row math ... */
     const flp=(tAbs-CFG.introBlankMs-focal.rowDelay)/Math.max(200,CFG.introLoadMs-focal.rowDelay);
     const fe=reduced?1:tileEase(flp);
-    const ftx=focal.fx+focal.dir*focal.S*(1-fe);
+    const fty=focal.fy+focal.dir*focal.S*(1-fe);
     /* ... while the Ken Burns zoom OVERLAPS the slide-in: it starts at
        zoomStartAt of the slide-in window, so the camera is already creeping
        in while tiles are still gliding to their spots. */
@@ -891,7 +902,7 @@ function frame(now){
        rendered at native resolution. When both clocks end it is exactly
        full-bleed (tile aspect == viewport aspect). */
     focusEl.style.visibility=(reduced||flp>0)?"visible":"hidden";
-    setFocusRect(cam.tx+cam.s*ftx, cam.ty+cam.s*focal.rect.y,
+    setFocusRect(cam.tx+cam.s*focal.rect.x, cam.ty+cam.s*fty,
                  focal.rect.w*cam.s, focal.rect.h*cam.s);
     {
       const slideDone=tAbs>=CFG.introBlankMs+CFG.introLoadMs*1.02;
