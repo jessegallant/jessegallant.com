@@ -89,6 +89,25 @@ body:not(.pre) .chrome, body:not(.pre) #strip{ animation:chromeIn 900ms ease }
 #p-body .p-foot{ padding:4vmin 8vmin 12vmin; display:flex; justify-content:space-between; color:var(--dim);
   font-size:.72rem; letter-spacing:.18em; text-transform:uppercase }
 #p-next{ cursor:pointer } #p-next:hover{ color:var(--ink) }
+/* password gate for full project details */
+#p-gate{ margin:2vmin 8vmin 8vmin; padding:5vmin 4vmin; text-align:center;
+  border:1px solid rgba(236,235,231,.16); border-radius:6px }
+#p-gate .k{ margin-bottom:2.2vmin }
+#p-gate input{ background:rgba(236,235,231,.06); border:1px solid rgba(236,235,231,.25);
+  color:var(--ink); font-family:inherit; font-size:.9rem; letter-spacing:.06em;
+  padding:.6em .9em; border-radius:4px 0 0 4px; outline:none; width:min(46vw,240px) }
+#p-gate input:focus{ border-color:var(--ink) }
+#p-gate button{ background:var(--ink); color:var(--bg); border:1px solid var(--ink);
+  font-size:.72rem; letter-spacing:.18em; text-transform:uppercase; cursor:pointer;
+  padding:.78em 1.2em; border-radius:0 4px 4px 0; margin-left:-1px }
+#p-gate .msg{ margin-top:1.6vmin; font-size:.72rem; letter-spacing:.14em;
+  text-transform:uppercase; color:#c88; min-height:1em }
+#p-gate.shake{ animation:gshake 320ms }
+@keyframes gshake{ 25%{transform:translateX(-6px)} 50%{transform:translateX(5px)} 75%{transform:translateX(-3px)} }
+#p-locked p{ margin:0 8vmin 6vmin; color:var(--dim); line-height:1.65; max-width:60ch }
+/* while a project page is open the Back button owns the top-left corner */
+body.inproj #c-name{ opacity:0; pointer-events:none }
+#c-name{ transition:opacity 350ms ease }
 #backBtn{ position:fixed; top:4vmin; left:5vmin; z-index:66; background:none; border:none; color:var(--ink);
   font-size:.72rem; letter-spacing:.18em; text-transform:uppercase; cursor:pointer; padding:0;
   opacity:0; pointer-events:none; transition:opacity 400ms; mix-blend-mode:difference }
@@ -172,30 +191,34 @@ body:not(.pre) .chrome, body:not(.pre) #strip{ animation:chromeIn 900ms ease }
 const A="assets";
 const P=[
   { t:"Robotic Repair Arm", meta:"Infinite Space Technologies — 2023", role:"Lead Engineering Designer",
-    text:"A small 3D-printed robotic arm to automatically repair broken satellites: 6 degrees of freedom, a 3-pronged gripper, the whole arm packed into a 175mm cube of mostly off-the-shelf components. Each segment carries its own bearings, gaskets and braces; a custom slip ring built from pogo pins and thin traces gives every joint unlimited rotation with no wire binding. Developed, manufactured, assembled and tested with a manufacturing engineer and the company's CEO.",
+    text:"A small 3D-printed robotic arm to automatically repair broken satellites: 6 degrees of freedom, a 3-pronged gripper, the whole arm packed into a 175mm cube of mostly off-the-shelf components.",
     lead:`${A}/roboticarm_04.jpg`,
-    comps:[`${A}/roboticarm_02.jpg`,`${A}/roboticarm_09.jpg`,`${A}/roboticarm_12.jpg`,`${A}/roboticarm_07.jpg`] },
+    comps:[`${A}/roboticarm_02.jpg`], lock:"arm" },
   { t:"Premio AI Fishing Pliers", meta:"Danco Sporting Goods — 2023", role:"Product Designer",
-    text:"A standard pair of Danco pliers transformed into a generative-designed titanium tool. Starting from the essential geometry — jaws, joint, handle — and the client's force requirements, dozens of generated variations were refined into an organic form with the right weight-to-strength ratio, engineered to withstand 500 pounds of force. Retailing at $699, and one of the most unique projects I have worked on: aesthetics with this tool is as much an art as a science.",
+    text:"A standard pair of Danco pliers transformed into a generative-designed titanium tool.",
     lead:`${A}/plier_07.jpg`,
-    comps:[`${A}/plier_03.jpg`,`${A}/plier_09.jpg`] },
+    comps:[`${A}/plier_03.jpg`], lock:"plier" },
   { t:"Embedded Oil Diffuser", meta:"Freelance client — 2023", role:"Product Design Engineer",
-    text:"A sleek diffuser that integrates four scent-oil canisters directly into the product, mixing oils into one central water compartment at the press of a button. The hard problems: airflow that pushes mist up without ever letting water into the fan compartment (solved by fully shrouding the fan and guiding air into the base of the water), a de-splasher for the port hole, and leak-proof dispensers — after ~10 beta versions, an off-the-shelf dispenser altered and seamlessly integrated. Designed alongside an electrical engineer's internal PCB, over more than a year of iteration and testing.",
+    text:"A sleek diffuser that integrates four scent-oil canisters directly into the product, mixing oils into one central water compartment at the press of a button.",
     lead:`${A}/diffuser_07.jpg`,
-    comps:[`${A}/diffuser_04.jpg`,`${A}/diffuser_10.jpg`,`${A}/diffuser_11.jpg`,`${A}/diffuser_08.jpg`] },
+    comps:[`${A}/diffuser_04.jpg`], lock:"diffuser" },
   { t:"Automatic Screw Driver", meta:"Freelance client — 2023", role:"Product Design Engineer",
-    text:"An aesthetic handheld automatic screwdriver with a swivel head: a trigger for analog speed control, a toggle for direction, LiPo batteries recharged over USB-C. Three bevel gears in the rotating head engage to allow positioning at any angle. Delivered as full CAD with manufacturing drawings and a product specification document — one of my first projects where I was solely responsible for every development step.",
+    text:"An aesthetic handheld automatic screwdriver with a swivel head, delivered as full CAD with manufacturing drawings and a product specification document.",
     lead:`${A}/driver_04.jpg`,
-    comps:[`${A}/driver_02.jpg`,`${A}/driver_00.jpg`,`${A}/driver_05.jpg`] },
+    comps:[`${A}/driver_02.jpg`], lock:"driver" },
   { t:"Wall Mounted Card Holder", meta:"Freelance client — 2023", role:"Product Design Engineer",
-    text:"A secure wall mount for trading cards of any height, width and thickness — displayed, and spinnable to show both sides. The core mechanism is a two-part plastic sleeve with a rubber overmold gripping cards 3–8mm thick, prototyped through multiple grips before landing on a fully injection-moldable design. An initial test unit and a 10-unit user-testing run were produced; the client is pursuing injection molding for production.",
+    text:"A secure wall mount for trading cards of any height, width and thickness, displayed and spinnable to show both sides.",
     lead:`${A}/cardholder_03.jpg`,
-    comps:[`${A}/cardholder_00.jpg`,`${A}/cardholder_06.jpg`,`${A}/cardholder_08.jpg`,`${A}/cardholder_11.jpg`] },
+    comps:[`${A}/cardholder_00.jpg`], lock:"cardholder" },
   { t:"Lockbox", meta:"Freelance client — 2023", role:"Product Design Engineer",
-    text:"A robust, pocket-sized lockbox with strict size constraints and a fully secure compartment. I bought simple locks, took them apart to learn the mechanisms, and integrated one into the design — about 20 iterations of tweaking to get the locking action right — plus a spring that pops the contents out when the lid swings off, a keychain loop, and a design that can be manufactured fully in metal. Currently in user testing with the client.",
+    text:"A robust, pocket-sized lockbox with strict size constraints and a fully secure compartment.",
     lead:`${A}/lockbox_07.jpg`,
-    comps:[`${A}/lockbox_04.jpg`,`${A}/lockbox_01.jpg`] },
+    comps:[`${A}/lockbox_04.jpg`], lock:"lockbox" },
 ];
+/* Encrypted "full details" payloads: AES-GCM, key derived from the shared
+   password via PBKDF2 (150k, SHA-256). Nothing readable ships in the page
+   or the network without the password — locked images travel as .enc. */
+const LOCKDATA={"salt": "fPLsPRkGKDiAO8Cv/Ci0mA==", "check": "Oi7juLxNBw1g8K8YEPwJNTQclHTXZmiQttDaiHUq", "text": {"arm": "BOkIEwfUhpASNZ3qItY6pO4atYgB6zZUroPNaakd8aRQUpXdBGuxUIw1MM07Z7aAO8282E5pMgdggkVjdb1bPnAFi4avE63Yd0ZctJvDgneGPKEapvpH/fKJY1n/5zU0/mswhqP76dn/acYQUtdL70uc79TRKOES/EPyZK3q/0hVj6d5ZQfBT/hmoeLmPqv8e+zAJQfBKHCj4qQKNas+7jlv1JGpdT+RM9J1NSyef29JLYMrsCIt4p/AluuHISU68KIHvJGWHAGSdiQtL4mAK+Fq/L6FdcKhUb6ZsqPzQxQFYogdEKtLQM2trcF49MsxqDIAj9OvD/3RSYYvuK5WgMMwYXj5UTff9TCMuuOzM8HKPvrL5cSivJaoBKKbZb4//FUmnagdwufQttW+", "plier": "9nNVDbYBldYuk4i5OfTnsC3Do4ZNkMCOwcTS77mjOrfK3dGcitJc/8rS03Vf05eWH/aBk4hCiBuX+nHrh0IxOWIUKxjfRDhE5B9KMzzR4AsT1qEgg0KEHgAs+1lZnjAYt4bKiVjSQcj2ERjWQdqVi/aaMdt1yq/aygAbYTGbQW6dgrQBoBxJMy+lfk2a6tGZrR6rjHlT2ws1AD5WPeXm0IZ0ZHHFnDSEMjHXTo3whXT8UfTYDpnDzWBsdNTqMOSpnlpp4XEAsz6Be8nUYklWPi+O1NOkt5iAFEoLpbBeKY1Z3MHAhAm2W4/625abtBVlZPSkA3ExkpeibpESfR2CDqyUmk3w9560v+RH7K2h+GZBbqMYiHdy5SPCQE50yTxLbBL/PSnlFLy9i6r+4knP+9tG+xyUgbAQgptwGRM25klg7lhTEehqoBv9COiuoNPexpxAC8Jfm9JLNMand35x6TqmWxv4A9tpk+uePYNLziRSUEaphk6g7BEqFgEsIRc6hybIwaJhKVq3H1GDUJbiJnS5e15wBGFLO9V0zQ==", "diffuser": "TM1pZsU+BVqKVDeicEzgB+T0kFC/M2mpxAPQriPY5x2RLcwOTwjCEdVH7LhFtPYHpnV1yZQ/hNL4mleDID8T/vPR4cjRRoIFNdVDpJblDVJbQh1cjW96jfVCkBKBIWLTX3rScW/vUUZ9Ad7P9gha/ooHJ5Oyz3mci+C0VjG/vpL6uNF6febFro+PfYO8xYp7PwgTQzGx3j92ytx+NSh77zju545d5XGunXTiVV+TzMipq7VU07AaC6C2Nz8/7OLn6XrG469bYHZvryhybTo4sdIMhIIzi7t4QN2F5FO5aZIvZed63b7iE3x9r+ZfFYAKg3VrvC3gk/S2Qr5CTab/ec2a/qkHnYLuJOiULkRS12DzfhNZM++vDjontO5LN1VMuqBZXmBl7RrnXcq2aqnTE5p7yNvNXQSRZCC/jS923UrWplkSuwFoM2Huvg5EiIadBudJQf0DnUcOJzP8zzLQR3lhCxfMVeFBK2tBbDGY5amXWVg6HTjr9ByYudQ669cmlBeX07/+Jgqmn83OMrOg4JRpGjvq5xI5UYJjZW/X1mGWTKicEgHVl/MKlgxLrIT8F0BzT6P++EyO3umB8kFib74ihOhMg7/0pasGJocR+d7uzDulWk0=", "driver": "tuCuqNdVb3+Y4DLJnGd3webr5b58Dlt0cT9ZOXIS/0OSR+eKGjzZfo+JPjnV4pYaFfFy5HuobL3XtPLYBqMTA1gFZGvdJ7lOIj+apxm9F3tGk4eKEhdzT66m3Pj2HiLmEWle8BGFxJmyYaN5C5MahgT6g+ss3xxOAdT/RSpopaSvdiglld6kEeej4TKdwHTOTTVfhRChUFe7ScOeMMV8+0oxHEAtH3pnM/Oqi+bG+0oOzvW7tvCBihRVpzRWPQKdnQLvJxhU9jQamhpuB/pzeZnFosUYlffaV583gI8gDUznNdCxfjC0iTZIt9bi+ZUZSnfaf1QoY2Oktv6LTmQjSyQuu4yHfGuGonixiiyIvW6jZ5m+ByTdWCMDRManm1nSq8C/klRpAZY486o8imeBCFARi2SYKypmgSFhtRndGr9Y/6NbauSGibTxWW4R90ddIt9fG8TK1nBBKjrPFilbcheN5/N8LciG9y/sl98fR79HYCgkKfVqtx9hLt/gnFs=", "cardholder": "UnVFAhoErrnGVw3LsuSPDzAI8qui9jb6l0i8oGihTDrhQc1mSo9PEi7K8JxUpqQBGjhZket44slPdZdEgTpoacpGrcm8OfFT54g4dGcm3LDdvWvsYIABlCgym58lbntw/E2ARxFSGYHJeZ/xmggEimog/2dEYRszRXzhyDNBTwnLL1yyqGBWXxd/iFSrzs4ErmeFrMFphNHR7pzNeqbiHqwBa/2SWwaE2rFE1k+Llm+S4sWX+v58/Nej4sab/I1FR2Hr+pPbtHaSFZqxCULeJ2BBSh8c0RfARLn5YfcvzfbNmWfdWb9AbVJQA2vw5TGHH6a78vCw+N1SxrZONOou3tOESAq1IWfFOn+cc4HzkaEVcYHE2uNdxW9hRjbjlXLveMkudxnIA7/oUGly0QthTR69Y0LZhY1wdCyb3LXT0dq6WNeUjKU5WfOkno2N4awOOw==", "lockbox": "y7ajD/vd225I4ljtfeiphqUk15nwRJws1bXPMV7lYoJAPMDkbOZUc/UOoHx+l3V3LUw2kLwRvkutG6ZurdYaxSyrXRt+I+tRk7GAkS1fE3z7GfXSVdHrkFP+Cl1K329MwNx6o0uLfk7qGOEsn3N0bHGhITZPtiDKGoRoC2boBtcDUbZZvlWEBhmVMxI1hObfSXv3oDn5TwvpcPTYOgCbfdrNMMxCGMzMrQb0GoB3MGR6bGmLm1LOMaKIq8c45/jLyvkNAHqcGN+SOpY5x2W1UUpYMgX6RZUSTqASSniovFw8XgMT0wVKXkWwhfcbPlReWPQ2Geb45mtvczkPu0C0C2rroaSgyu8tZsG6eR5/Q0GvEBx8lqx5sb3kw5Lms2h/DjZQfGOg89U1dFa0H/lZ6njsCzkIXZEF/484uV0qodMS2mctTOmPr7lg5r2aWE91If1spyJV6xcM34YKH1QHa9uWA1YxiKWNIeTrYZ2BT0/O"}, "imgs": {"arm": ["assets/locked/roboticarm_09.enc", "assets/locked/roboticarm_12.enc", "assets/locked/roboticarm_07.enc"], "plier": ["assets/locked/plier_09.enc"], "diffuser": ["assets/locked/diffuser_10.enc", "assets/locked/diffuser_11.enc", "assets/locked/diffuser_08.enc"], "driver": ["assets/locked/driver_00.enc", "assets/locked/driver_05.enc"], "cardholder": ["assets/locked/cardholder_06.enc", "assets/locked/cardholder_08.enc", "assets/locked/cardholder_11.enc"], "lockbox": ["assets/locked/lockbox_01.enc"]}};
 const N=P.length;
 /* every real image, for the intro wall */
 const WALL=P.flatMap(p=>[p.lead,...p.comps]);
@@ -632,6 +655,7 @@ function closeFocus(){
      covers it — it must never sit above the carousel during the collapse */
   try{ if(intro&&intro.parentNode)intro.remove(); }catch(e){}
   proj.classList.remove("open"); backBtn.classList.remove("open");
+  document.body.classList.remove("inproj");
   mm.classList.remove("open"); stripNav.classList.remove("hide");
   mode="strip"; lastInput=performance.now();
   pull=0; pullShown=0; topSince=null;
@@ -969,6 +993,10 @@ requestAnimationFrame(frame);
 /* ============ project ============ */
 const proj=document.getElementById("project");
 const backBtn=document.getElementById("backBtn");
+function refreshProjectMetrics(){
+  ps.max=Math.max(0,pScroll.scrollHeight-innerHeight);
+  buildMinimap();
+}
 function enterProject(i){
   const p=P[i];
   document.getElementById("p-title").textContent=p.t;
@@ -977,16 +1005,93 @@ function enterProject(i){
   document.getElementById("p-text").textContent=p.text;
   const imgs=document.getElementById("p-imgs");
   imgs.innerHTML=p.comps.map(c=>`<div class="p-img" style="background-image:url('${c}')"></div>`).join("");
+  buildGate(p);
   document.getElementById("p-count").textContent=(i+1)+" — "+N;
   ps.c=ps.t=0; pull=0; pullShown=0; topSince=null;
   pScroll.style.transform="translate3d(0,0,0)";
   proj.classList.add("open"); backBtn.classList.add("open");
+  document.body.classList.add("inproj");        /* Back owns the top-left */
   stripNav.classList.add("hide");
   mode="project";
   requestAnimationFrame(()=>{
-    ps.max=Math.max(0,pScroll.scrollHeight-innerHeight);
-    buildMinimap();
+    refreshProjectMetrics();
     mm.classList.add("open");
+  });
+}
+
+/* ============ password gate (client-side AES-GCM) ============
+   The locked half of each case study ships encrypted: extra text lives in
+   LOCKDATA, extra images travel as assets/locked/*.enc. The password
+   derives the key (PBKDF2); without it nothing readable is in the page or
+   the network. One password unlocks the whole site for the session. */
+let unlockKey=null;                       /* CryptoKey once validated */
+const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+async function deriveKey(pass){
+  const km=await crypto.subtle.importKey("raw",new TextEncoder().encode(pass),"PBKDF2",false,["deriveKey"]);
+  return crypto.subtle.deriveKey(
+    {name:"PBKDF2",salt:b64(LOCKDATA.salt),iterations:150000,hash:"SHA-256"},
+    km,{name:"AES-GCM",length:256},false,["decrypt"]);
+}
+async function tryPassword(pass){
+  try{
+    const k=await deriveKey(pass);
+    const d=b64(LOCKDATA.check);
+    await crypto.subtle.decrypt({name:"AES-GCM",iv:d.slice(0,12)},k,d.slice(12));
+    unlockKey=k;
+    try{sessionStorage.setItem("pf-pass",pass);}catch(e){}
+    return true;
+  }catch(e){ return false; }
+}
+async function dec(ct){                    /* b64 -> ArrayBuffer */
+  const d=b64(ct);
+  return crypto.subtle.decrypt({name:"AES-GCM",iv:d.slice(0,12)},unlockKey,d.slice(12));
+}
+async function revealLocked(p){
+  const gate=document.getElementById("p-gate");
+  const box=document.getElementById("p-locked");
+  const txt=new TextDecoder().decode(await dec(LOCKDATA.text[p.lock]));
+  let html=`<p>${txt.replace(/</g,"&lt;")}</p>`;
+  box.innerHTML=html;
+  for(const u of LOCKDATA.imgs[p.lock]){
+    try{
+      const buf=await fetch(u).then(r=>r.arrayBuffer());
+      const plain=await crypto.subtle.decrypt(
+        {name:"AES-GCM",iv:new Uint8Array(buf,0,12)},unlockKey,new Uint8Array(buf,12));
+      const url=URL.createObjectURL(new Blob([plain],{type:"image/jpeg"}));
+      const d=document.createElement("div"); d.className="p-img";
+      d.style.backgroundImage=`url('${url}')`;
+      box.appendChild(d);
+    }catch(e){}
+  }
+  if(gate)gate.remove();
+  refreshProjectMetrics();
+}
+function buildGate(p){
+  let gate=document.getElementById("p-gate");
+  let box=document.getElementById("p-locked");
+  if(gate)gate.remove();
+  if(box)box.remove();
+  if(!p.lock||!LOCKDATA.text[p.lock])return;
+  const imgs=document.getElementById("p-imgs");
+  box=document.createElement("div"); box.id="p-locked";
+  imgs.after(box);
+  /* already unlocked this session (or stored password)? reveal silently */
+  const stored=(()=>{try{return sessionStorage.getItem("pf-pass");}catch(e){return null;}})();
+  if(unlockKey){ revealLocked(p); return; }
+  if(stored){ tryPassword(stored).then(ok=>{ if(ok)revealLocked(p); }); }
+  gate=document.createElement("div"); gate.id="p-gate";
+  gate.innerHTML=`<div class="k">Client work — enter password for the full case study</div>
+    <form id="p-gate-form"><input type="password" placeholder="Password" autocomplete="off">
+    <button type="submit">Unlock</button></form><div class="msg"></div>`;
+  box.after(gate);
+  gate.querySelector("form").addEventListener("submit",async e=>{
+    e.preventDefault();
+    const inp=gate.querySelector("input"), msg=gate.querySelector(".msg");
+    msg.textContent="";
+    const ok=await tryPassword(inp.value.trim());
+    if(ok){ revealLocked(P[focusProj]); }
+    else{ msg.textContent="Incorrect password"; inp.value="";
+      gate.classList.remove("shake"); void gate.offsetWidth; gate.classList.add("shake"); }
   });
 }
 backBtn.addEventListener("click",closeFocus);
