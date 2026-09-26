@@ -1,8 +1,8 @@
 <!doctype html>
 <!--
-  Jesse Gallant — portfolio. All images and project text are Jesse's own,
+  Jesse Gallant - portfolio. All images and project text are Jesse's own,
   extracted from sites.google.com/view/jgallantportfolios. Images live in
-  ./assets/ — keep the folder next to this file.
+  ./assets/ - keep the folder next to this file.
   Interaction design is an homage to camillemormal.com (credited on-page).
   The Feel panel (bottom left) is a dev tool: tune, Copy, then it can be
   stripped for the production build.
@@ -11,8 +11,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Jesse Gallant — product design engineer. Selected hardware work: robotics, generative design, consumer devices.">
-<title>Jesse Gallant — Work</title>
+<meta name="description" content="Jesse Gallant, product design engineer. Selected hardware work: robotics, generative design, consumer devices.">
+<title>Jesse Gallant · Work</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,420&family=Instrument+Sans:wght@400;500&display=swap" rel="stylesheet">
@@ -154,8 +154,8 @@ body.inproj #c-name{ opacity:0; pointer-events:none }
   #c-name,#c-about{ top:18px }
   #c-name,#backBtn{ left:18px } #c-about{ right:18px }
   #backBtn{ top:18px }
-  #c-index{ left:18px; bottom:34px }
-  #strip{ right:18px; bottom:30px; gap:4px }
+  #c-index{ left:18px; bottom:24px }
+  #strip{ right:18px; bottom:20px; gap:4px }
   #strip button{ width:34px; height:24px }
   #c-credit{ bottom:9px; white-space:nowrap; font-size:.5rem; letter-spacing:.06em }
   /* inside a project the page footer carries the count; the fixed chrome
@@ -187,6 +187,44 @@ body.inproj #c-name{ opacity:0; pointer-events:none }
   /* iOS zooms the page when focusing an input under 16px */
   #p-gate input{ font-size:16px }
 }
+/* ================= ABOUT =================
+   Mirrors the structure of camillemormal.com/about: one narrow column set
+   right of center, a large plain statement, then sections whose entries
+   are indented, white titles over small grey meta. */
+#about{ position:fixed; inset:0; z-index:75; background:var(--bg); overflow:hidden;
+  opacity:0; visibility:hidden; transition:opacity 500ms ease, visibility 0s linear 500ms }
+#about.on{ opacity:1; visibility:visible; transition:opacity 500ms ease }
+#ab-in{ margin-left:43.75vw; width:min(470px,46vw); padding:20vh 0 22vh; will-change:transform }
+#about a{ color:inherit; text-decoration:none; border-bottom:1px solid rgba(236,235,231,.35) }
+#about a:hover{ opacity:1; border-bottom-color:var(--ink) }
+.ab-lead{ margin:0 0 1.3em; font-size:clamp(21px,2.8vw,34px); line-height:1.3; color:var(--ink);
+  letter-spacing:-.005em; font-weight:400 }
+#about section{ margin-top:clamp(90px,15vh,180px) }
+#about h3{ margin:0 0 clamp(26px,4.5vh,48px); font-weight:400; font-size:clamp(21px,2.8vw,34px);
+  line-height:1.3; color:var(--ink); letter-spacing:-.005em }
+.ab-it{ margin:0 0 clamp(28px,4.4vh,44px) min(82px,8vw) }
+.ab-it .t{ font-size:clamp(17px,2.3vw,27px); line-height:1.2; color:var(--ink) }
+.ab-it .m, .ab-list div{ font-size:12.8px; line-height:1.33; color:#666667; margin-top:.35em }
+.ab-it .t + .m{ margin-top:.7em }
+.ab-list{ margin-left:min(82px,8vw) } .ab-list div{ margin-top:0 }
+/* reveal: each row rises in on open, staggered */
+.ab-r{ opacity:0; transform:translateY(22px);
+  transition:opacity 800ms cubic-bezier(.2,.7,.2,1), transform 900ms cubic-bezier(.2,.7,.2,1);
+  transition-delay:var(--d,0ms) }
+#about.on .ab-r{ opacity:1; transform:none }
+/* while About is open it owns the screen; only name + Close stay */
+body.aboutopen #c-name, body.aboutopen #c-about{ z-index:80; opacity:1 !important; pointer-events:auto }
+body.aboutopen #strip, body.aboutopen #minimap, body.aboutopen #backBtn, body.aboutopen #c-index{
+  opacity:0 !important; pointer-events:none }
+@media (max-width:700px){
+  #ab-in{ margin-left:0; width:auto; padding:96px 24px 90px 22px }
+  .ab-lead, #about h3{ font-size:23px }
+  .ab-it, .ab-list{ margin-left:28px }
+  .ab-it .t{ font-size:19px }
+  #about section{ margin-top:84px }
+  body.aboutopen::before{ content:""; position:fixed; left:0; right:0; top:0; height:64px;
+    z-index:76; pointer-events:none; background:linear-gradient(var(--bg) 45%, rgba(20,20,20,0)) }
+}
 </style>
 </head>
 <body class="pre">
@@ -195,9 +233,8 @@ body.inproj #c-name{ opacity:0; pointer-events:none }
 <div id="pct">0%</div>
 
 <div class="chrome" id="c-name">Jesse Gallant</div>
-<a class="chrome" id="c-about" href="mailto:jesse.gallant4@gmail.com">About / Contact</a>
-<div class="chrome" id="c-index">1 — 4</div>
-<a class="chrome" id="c-credit" href="https://camillemormal.com" target="_blank" rel="noopener">Interaction design homage — camillemormal.com</a>
+<a class="chrome" id="c-about" href="#about">About / Contact</a>
+<div class="chrome" id="c-index">1 / 6</div>
 <div id="strip"></div>
 
 <div id="stage"><div id="track"></div></div>
@@ -222,42 +259,95 @@ body.inproj #c-name{ opacity:0; pointer-events:none }
     </div>
   </div>
 </div>
+
+<div id="about" aria-hidden="true">
+  <div id="ab-in">
+    <p class="ab-lead ab-r">I'm a product design engineer in New York. For the last four years I've been at Medivis, taking surgical hardware from first concept through manufacturing and into the operating room.</p>
+    <p class="ab-lead ab-r">I like owning the whole arc of a product: the design and product decisions up front, then the prototyping, testing and vendor work that make it real. Before Medivis I freelanced, shipping physical products for dozens of clients.</p>
+
+    <section>
+      <h3 class="ab-r">Working Experience</h3>
+      <div class="ab-it ab-r"><div class="t">Product Design Engineer<br>Medivis</div><div class="m">Hardware team lead · Spine Navigation product manager</div><div class="m">2022 – Present · New York</div></div>
+      <div class="ab-it ab-r"><div class="t">Freelance Product<br>Design Engineer</div><div class="m">Upwork</div><div class="m">2020 – 2022</div></div>
+    </section>
+
+    <section>
+      <h3 class="ab-r">Education</h3>
+      <div class="ab-it ab-r"><div class="t">B.S. Computer Science<br>Brown University</div><div class="m">Artificial Intelligence</div><div class="m">2024</div></div>
+    </section>
+
+    <section>
+      <h3 class="ab-r">Recognition</h3>
+      <div class="ab-it ab-r"><div class="t">First-Named Inventor</div><div class="m">13+ patents</div></div>
+      <div class="ab-it ab-r"><div class="t">RoboCup Soccer</div><div class="m">1st place USA</div><div class="m">2016 and 2017</div></div>
+      <div class="ab-it ab-r"><div class="t">RoboCup Soccer</div><div class="m">2nd place international</div><div class="m">2016</div></div>
+    </section>
+
+    <section>
+      <h3 class="ab-r">Clients I've Worked With</h3>
+      <div class="ab-list ab-r">
+        <div>Medivis</div><div>Infinite Space Technology</div><div>Danco Sports</div><div>Wrapbotics</div>
+        <div>Roqos</div><div>TokenWorks</div><div>Murray Sports</div>
+      </div>
+    </section>
+
+    <section>
+      <h3 class="ab-r">Tools</h3>
+      <div class="ab-list ab-r">
+        <div>SolidWorks</div><div>Fusion 360</div><div>GD&amp;T</div><div>DFM / DFA</div>
+        <div>Machined and sheet-metal parts</div><div>Injection molding</div>
+        <div>Python · C · Java</div><div>HTML / CSS / JS</div>
+      </div>
+    </section>
+
+    <section>
+      <h3 class="ab-r">Get In Touch</h3>
+      <div class="ab-it ab-r"><div class="t"><a href="mailto:jesse.gallant4@gmail.com">Email</a></div><div class="m">jesse.gallant4@gmail.com</div></div>
+    </section>
+
+    <section>
+      <h3 class="ab-r">Credits</h3>
+      <div class="ab-it ab-r"><div class="t"><a href="https://camillemormal.com" target="_blank" rel="noopener">Camille Mormal</a></div><div class="m">Design and interaction homage</div></div>
+      <div class="ab-it ab-r"><div class="t">Fraunces &amp; Instrument Sans</div><div class="m">Type</div></div>
+    </section>
+  </div>
+</div>
 <div id="minimap"><div id="mm-page"></div><div id="mm-win"></div></div>
 
-<div id="panel"><header id="panelHead"><b>Feel</b><span id="panelTog">—</span></header><div class="body" id="panelBody"></div></div>
+<div id="panel"><header id="panelHead"><b>Feel</b><span id="panelTog">−</span></header><div class="body" id="panelBody"></div></div>
 
 <script>
 "use strict";
 const A="assets";
 const P=[
-  { t:"Robotic Repair Arm", meta:"Infinite Space Technologies — 2023", role:"Lead Engineering Designer",
+  { t:"Robotic Repair Arm", meta:"Infinite Space Technologies · 2023", role:"Lead Engineering Designer",
     text:"A small 3D-printed robotic arm to automatically repair broken satellites: 6 degrees of freedom, a 3-pronged gripper, the whole arm packed into a 175mm cube of mostly off-the-shelf components.",
     lead:`${A}/roboticarm_04.jpg`,
     comps:[`${A}/roboticarm_02.jpg`], lock:"arm" },
-  { t:"Premio AI Fishing Pliers", meta:"Danco Sporting Goods — 2023", role:"Product Designer",
+  { t:"Premio AI Fishing Pliers", meta:"Danco Sporting Goods · 2023", role:"Product Designer",
     text:"A standard pair of Danco pliers transformed into a generative-designed titanium tool.",
     lead:`${A}/plier_07.jpg`,
     comps:[`${A}/plier_03.jpg`], lock:"plier" },
-  { t:"Embedded Oil Diffuser", meta:"Freelance client — 2023", role:"Product Design Engineer",
+  { t:"Embedded Oil Diffuser", meta:"Freelance client · 2023", role:"Product Design Engineer",
     text:"A sleek diffuser that integrates four scent-oil canisters directly into the product, mixing oils into one central water compartment at the press of a button.",
     lead:`${A}/diffuser_07.jpg`,
     comps:[`${A}/diffuser_04.jpg`], lock:"diffuser" },
-  { t:"Automatic Screw Driver", meta:"Freelance client — 2023", role:"Product Design Engineer",
+  { t:"Automatic Screw Driver", meta:"Freelance client · 2023", role:"Product Design Engineer",
     text:"An aesthetic handheld automatic screwdriver with a swivel head, delivered as full CAD with manufacturing drawings and a product specification document.",
     lead:`${A}/driver_04.jpg`,
     comps:[`${A}/driver_02.jpg`], lock:"driver" },
-  { t:"Wall Mounted Card Holder", meta:"Freelance client — 2023", role:"Product Design Engineer",
+  { t:"Wall Mounted Card Holder", meta:"Freelance client · 2023", role:"Product Design Engineer",
     text:"A secure wall mount for trading cards of any height, width and thickness, displayed and spinnable to show both sides.",
     lead:`${A}/cardholder_03.jpg`,
     comps:[`${A}/cardholder_00.jpg`], lock:"cardholder" },
-  { t:"Lockbox", meta:"Freelance client — 2023", role:"Product Design Engineer",
+  { t:"Lockbox", meta:"Freelance client · 2023", role:"Product Design Engineer",
     text:"A robust, pocket-sized lockbox with strict size constraints and a fully secure compartment.",
     lead:`${A}/lockbox_07.jpg`,
     comps:[`${A}/lockbox_04.jpg`], lock:"lockbox" },
 ];
 /* Encrypted "full details" payloads: AES-GCM, key derived from the shared
    password via PBKDF2 (150k, SHA-256). Nothing readable ships in the page
-   or the network without the password — locked images travel as .enc. */
+   or the network without the password - locked images travel as .enc. */
 const LOCKDATA={"salt": "fPLsPRkGKDiAO8Cv/Ci0mA==", "check": "Oi7juLxNBw1g8K8YEPwJNTQclHTXZmiQttDaiHUq", "text": {"arm": "BOkIEwfUhpASNZ3qItY6pO4atYgB6zZUroPNaakd8aRQUpXdBGuxUIw1MM07Z7aAO8282E5pMgdggkVjdb1bPnAFi4avE63Yd0ZctJvDgneGPKEapvpH/fKJY1n/5zU0/mswhqP76dn/acYQUtdL70uc79TRKOES/EPyZK3q/0hVj6d5ZQfBT/hmoeLmPqv8e+zAJQfBKHCj4qQKNas+7jlv1JGpdT+RM9J1NSyef29JLYMrsCIt4p/AluuHISU68KIHvJGWHAGSdiQtL4mAK+Fq/L6FdcKhUb6ZsqPzQxQFYogdEKtLQM2trcF49MsxqDIAj9OvD/3RSYYvuK5WgMMwYXj5UTff9TCMuuOzM8HKPvrL5cSivJaoBKKbZb4//FUmnagdwufQttW+", "plier": "9nNVDbYBldYuk4i5OfTnsC3Do4ZNkMCOwcTS77mjOrfK3dGcitJc/8rS03Vf05eWH/aBk4hCiBuX+nHrh0IxOWIUKxjfRDhE5B9KMzzR4AsT1qEgg0KEHgAs+1lZnjAYt4bKiVjSQcj2ERjWQdqVi/aaMdt1yq/aygAbYTGbQW6dgrQBoBxJMy+lfk2a6tGZrR6rjHlT2ws1AD5WPeXm0IZ0ZHHFnDSEMjHXTo3whXT8UfTYDpnDzWBsdNTqMOSpnlpp4XEAsz6Be8nUYklWPi+O1NOkt5iAFEoLpbBeKY1Z3MHAhAm2W4/625abtBVlZPSkA3ExkpeibpESfR2CDqyUmk3w9560v+RH7K2h+GZBbqMYiHdy5SPCQE50yTxLbBL/PSnlFLy9i6r+4knP+9tG+xyUgbAQgptwGRM25klg7lhTEehqoBv9COiuoNPexpxAC8Jfm9JLNMand35x6TqmWxv4A9tpk+uePYNLziRSUEaphk6g7BEqFgEsIRc6hybIwaJhKVq3H1GDUJbiJnS5e15wBGFLO9V0zQ==", "diffuser": "TM1pZsU+BVqKVDeicEzgB+T0kFC/M2mpxAPQriPY5x2RLcwOTwjCEdVH7LhFtPYHpnV1yZQ/hNL4mleDID8T/vPR4cjRRoIFNdVDpJblDVJbQh1cjW96jfVCkBKBIWLTX3rScW/vUUZ9Ad7P9gha/ooHJ5Oyz3mci+C0VjG/vpL6uNF6febFro+PfYO8xYp7PwgTQzGx3j92ytx+NSh77zju545d5XGunXTiVV+TzMipq7VU07AaC6C2Nz8/7OLn6XrG469bYHZvryhybTo4sdIMhIIzi7t4QN2F5FO5aZIvZed63b7iE3x9r+ZfFYAKg3VrvC3gk/S2Qr5CTab/ec2a/qkHnYLuJOiULkRS12DzfhNZM++vDjontO5LN1VMuqBZXmBl7RrnXcq2aqnTE5p7yNvNXQSRZCC/jS923UrWplkSuwFoM2Huvg5EiIadBudJQf0DnUcOJzP8zzLQR3lhCxfMVeFBK2tBbDGY5amXWVg6HTjr9ByYudQ669cmlBeX07/+Jgqmn83OMrOg4JRpGjvq5xI5UYJjZW/X1mGWTKicEgHVl/MKlgxLrIT8F0BzT6P++EyO3umB8kFib74ihOhMg7/0pasGJocR+d7uzDulWk0=", "driver": "tuCuqNdVb3+Y4DLJnGd3webr5b58Dlt0cT9ZOXIS/0OSR+eKGjzZfo+JPjnV4pYaFfFy5HuobL3XtPLYBqMTA1gFZGvdJ7lOIj+apxm9F3tGk4eKEhdzT66m3Pj2HiLmEWle8BGFxJmyYaN5C5MahgT6g+ss3xxOAdT/RSpopaSvdiglld6kEeej4TKdwHTOTTVfhRChUFe7ScOeMMV8+0oxHEAtH3pnM/Oqi+bG+0oOzvW7tvCBihRVpzRWPQKdnQLvJxhU9jQamhpuB/pzeZnFosUYlffaV583gI8gDUznNdCxfjC0iTZIt9bi+ZUZSnfaf1QoY2Oktv6LTmQjSyQuu4yHfGuGonixiiyIvW6jZ5m+ByTdWCMDRManm1nSq8C/klRpAZY486o8imeBCFARi2SYKypmgSFhtRndGr9Y/6NbauSGibTxWW4R90ddIt9fG8TK1nBBKjrPFilbcheN5/N8LciG9y/sl98fR79HYCgkKfVqtx9hLt/gnFs=", "cardholder": "UnVFAhoErrnGVw3LsuSPDzAI8qui9jb6l0i8oGihTDrhQc1mSo9PEi7K8JxUpqQBGjhZket44slPdZdEgTpoacpGrcm8OfFT54g4dGcm3LDdvWvsYIABlCgym58lbntw/E2ARxFSGYHJeZ/xmggEimog/2dEYRszRXzhyDNBTwnLL1yyqGBWXxd/iFSrzs4ErmeFrMFphNHR7pzNeqbiHqwBa/2SWwaE2rFE1k+Llm+S4sWX+v58/Nej4sab/I1FR2Hr+pPbtHaSFZqxCULeJ2BBSh8c0RfARLn5YfcvzfbNmWfdWb9AbVJQA2vw5TGHH6a78vCw+N1SxrZONOou3tOESAq1IWfFOn+cc4HzkaEVcYHE2uNdxW9hRjbjlXLveMkudxnIA7/oUGly0QthTR69Y0LZhY1wdCyb3LXT0dq6WNeUjKU5WfOkno2N4awOOw==", "lockbox": "y7ajD/vd225I4ljtfeiphqUk15nwRJws1bXPMV7lYoJAPMDkbOZUc/UOoHx+l3V3LUw2kLwRvkutG6ZurdYaxSyrXRt+I+tRk7GAkS1fE3z7GfXSVdHrkFP+Cl1K329MwNx6o0uLfk7qGOEsn3N0bHGhITZPtiDKGoRoC2boBtcDUbZZvlWEBhmVMxI1hObfSXv3oDn5TwvpcPTYOgCbfdrNMMxCGMzMrQb0GoB3MGR6bGmLm1LOMaKIq8c45/jLyvkNAHqcGN+SOpY5x2W1UUpYMgX6RZUSTqASSniovFw8XgMT0wVKXkWwhfcbPlReWPQ2Geb45mtvczkPu0C0C2rroaSgyu8tZsG6eR5/Q0GvEBx8lqx5sb3kw5Lms2h/DjZQfGOg89U1dFa0H/lZ6njsCzkIXZEF/484uV0qodMS2mctTOmPr7lg5r2aWE91If1spyJV6xcM34YKH1QHa9uWA1YxiKWNIeTrYZ2BT0/O"}, "imgs": {"arm": ["assets/locked/roboticarm_09.enc", "assets/locked/roboticarm_12.enc", "assets/locked/roboticarm_07.enc"], "plier": ["assets/locked/plier_09.enc"], "diffuser": ["assets/locked/diffuser_10.enc", "assets/locked/diffuser_11.enc", "assets/locked/diffuser_08.enc"], "driver": ["assets/locked/driver_00.enc", "assets/locked/driver_05.enc"], "cardholder": ["assets/locked/cardholder_06.enc", "assets/locked/cardholder_08.enc", "assets/locked/cardholder_11.enc"], "lockbox": ["assets/locked/lockbox_01.enc"]}};
 const N=P.length;
 /* every real image, for the intro wall */
@@ -274,16 +364,16 @@ const easeInOut=t=>{ t=Math.max(0,Math.min(1,t)); return t<.5 ? 4*t*t*t : 1-Math
    The velocity curve is a smooth spline through a handful of control
    points: pinned (0,0) and (1,0) at the ends (zero velocity, so every
    chained motion stays seamless) plus a few draggable interior points
-   [u, v] — u = fraction of the clip's time, v = relative speed (unitless;
-   the integral is normalized, so total distance is always exactly covered —
+   [u, v] - u = fraction of the clip's time, v = relative speed (unitless;
+   the integral is normalized, so total distance is always exactly covered -
    raising one part of the curve implicitly slows the rest).
    Interpolation: MONOTONE cubic Hermite (Fritsch–Carlson limited
    tangents). Unlike plain Catmull-Rom, the curve can never overshoot
-   between control points — so with the endpoints pinned at zero the
+   between control points - so with the endpoints pinned at zero the
    velocity is >= 0 everywhere BY CONSTRUCTION and always descends
    smoothly into the endpoints. (Catmull-Rom + clamping could dive below
    zero after a sharp peak and get truncated, which froze the motion from
-   nonzero speed — a visible snap at the end of the intro.) The "smooth"
+   nonzero speed - a visible snap at the end of the intro.) The "smooth"
    slider scales the tangents before limiting: lower = softer shoulders. */
 const _lutCache={};
 function tension(){ return Math.max(.25,Math.min(1.4,1.5-.5*CFG.smooth)); }
@@ -342,7 +432,7 @@ const DEFAULTS={
   pullExit:40,      pullArm:0,      pullGain:0.2,   dragGain:2,
 };
 const SLIDERS=[
-  ["— Strip —"],
+  ["Strip"],
   ["scrollEase","Glide ease",0.5,7,0.1],
   ["magnet","Idle magnet",0,4,0.1],
   ["wheelGain","Wheel gain",0.2,3,0.05],
@@ -353,14 +443,14 @@ const SLIDERS=[
   ["leadH","Frame height vh",35,80,1],
   ["frameAR","Frame aspect",0.7,2,0.05],
   ["frameGapVw","Frame gap vw",2,20,0.5],
-  ["— Click / project —"],
+  ["Click / project"],
   ["expandIn","Expand-in ease",0.5,8,0.1],
   ["expandOut","Shrink ease",0.5,8,0.1],
   ["pageScroll","Page scroll ease",0.5,8,0.1],
   ["pullExit","Exit pull px",40,2000,20],
   ["pullArm","Exit arm ms",0,2000,20],
   ["pullGain","Exit pull gain",0.2,8,0.1],
-  ["— Intro —"],
+  ["Intro"],
   ["#graph"],
   ["introBlankMs","Blank lead-in ms",0,2500,50],
   ["introLoadMs","Slide-in time ms",800,6000,100],
@@ -403,7 +493,7 @@ function syncSlider(key){ const r=sliderRefs[key]; if(!r)return;
   const v=Math.round(CFG[key]*1000)/1000; r.inp.value=v; r.out.textContent=v; }
 
 /* ---- velocity-over-time graph: tiles + ken burns, spline-point editing ----
-   FIXED axes: x is time in seconds, y is speed (shape units per second) —
+   FIXED axes: x is time in seconds, y is speed (shape units per second) -
    nothing auto-rescales while editing; wheel over the graph zooms the y
    scale, shift+wheel zooms the time scale. The plotted curves are the raw
    splines as drawn; at runtime each curve is normalized so the motion
@@ -434,7 +524,7 @@ function drawGraph(){
   for(let s=1000;s<span;s+=1000){ vgx.beginPath(); vgx.moveTo(X(s),pad); vgx.lineTo(X(s),bot); vgx.stroke(); }
   vgx.strokeStyle="rgba(255,255,255,.18)";
   vgx.beginPath(); vgx.moveTo(pad,bot); vgx.lineTo(W-pad,bot); vgx.stroke();
-  /* raw spline value per second of THIS curve's window — no normalization,
+  /* raw spline value per second of THIS curve's window - no normalization,
      so an edit changes only what you touched */
   const shape=(pts,tau)=>curveEase(pts);   /* cached */
   const tileC=shape(CFG.tileCurve), kbC=shape(CFG.kbCurve);
@@ -539,15 +629,15 @@ document.getElementById("bCopy").addEventListener("click",e=>{
 document.getElementById("bReplay").addEventListener("click",()=>{ saveCFG(); location.reload(); });
 document.getElementById("panelHead").addEventListener("click",()=>{
   panel.classList.toggle("min");
-  document.getElementById("panelTog").textContent=panel.classList.contains("min")?"+":"—";
+  document.getElementById("panelTog").textContent=panel.classList.contains("min")?"+":"−";
 });
 
 /* ============ collage strip ============ */
 const track=document.getElementById("track");
-const pics=[];            /* {el,part,x,w,h,proj,isLead} — x,w,h set by layoutStrip */
+const pics=[];            /* {el,part,x,w,h,proj,isLead} - x,w,h set by layoutStrip */
 const clusterCenter=[];   /* px x of each cluster's lead center */
 let trackW=0;
-/* ONE image per project — uniform frames, evenly spaced. Companion shots
+/* ONE image per project - uniform frames, evenly spaced. Companion shots
    live inside the project pages, not in the carousel. */
 P.forEach((p,pi)=>{
   const el=document.createElement("div"); el.className="pic";
@@ -621,12 +711,12 @@ function projectDelta(d){
 }
 const clampD=d=>Math.max(-CFG.maxDelta,Math.min(CFG.maxDelta,d));
 /* while the focus clone is still gliding back to its strip rect, the
-   carousel holds still — same feel as zooming out of a project page.
+   carousel holds still - same feel as zooming out of a project page.
    Input resumes only once the collapse has fully settled. */
 const collapsing=()=> f.t===0 && f.v>.05;
 /* momentum swallow after an exit: only the tail of THAT gesture is eaten.
    It releases on any of: a 250ms pause (gesture ended), a direction
-   reversal (momentum never reverses — that's a person), or a 1.2s hard cap
+   reversal (momentum never reverses - that's a person), or a 1.2s hard cap
    (no momentum tail lives longer; scrolling must never feel frozen). */
 let swallowStrip=false, lastStripWheel=0, swallowStart=0, swallowDir=0;
 addEventListener("wheel",e=>{
@@ -646,6 +736,7 @@ addEventListener("wheel",e=>{
   }
   else if(mode==="preview"){ closeFocus(); }   /* first scroll -> collapse only */
   else if(mode==="project")projectDelta(clampD(e.deltaY)*0.9);
+  else if(mode==="about")aboutDelta(clampD(e.deltaY)*0.9);
 },{passive:true});
 let tx=null,ty=null,drag=false,dragMoved=0;
 addEventListener("pointerdown",e=>{ if(e.target.closest("#minimap")||e.target.closest("#panel"))return; drag=true;dragMoved=0;tx=e.clientX;ty=e.clientY; });
@@ -668,6 +759,8 @@ const wasDrag=()=>dragMoved>6;
    a release fling, so a flick keeps gliding like native scrolling instead
    of stopping dead when the finger lifts ---- */
 let ttx=0,tty=0,tvx=0,tvy=0,tlast=0,tActive=false;
+/* finger-to-motion ratios (were 2.2x strip, 2.2x page: too twitchy) */
+const TOUCH_STRIP=1.5, TOUCH_PAGE=1.5;
 addEventListener("touchstart",e=>{
   if(e.target.closest("#panel"))return;
   tActive=true; ttx=e.touches[0].clientX; tty=e.touches[0].clientY;
@@ -679,24 +772,28 @@ addEventListener("touchmove",e=>{
   const dx=ttx-x, dy=tty-y, dt=Math.max(1,now-tlast);
   /* smoothed finger velocity, px per ms */
   tvx=tvx*.6+(dx/dt)*.4; tvy=tvy*.6+(dy/dt)*.4;
-  if(mode==="strip"){ if(!collapsing())stripDelta((Math.abs(dy)>Math.abs(dx)?dy:dx)*CFG.dragGain*1.1); }
+  if(mode==="strip"){ if(!collapsing())stripDelta((Math.abs(dy)>Math.abs(dx)?dy:dx)*TOUCH_STRIP); }
   else if(mode==="preview"){ if(Math.abs(dx)+Math.abs(dy)>4)closeFocus(); }
-  else if(mode==="project")projectDelta(dy*2.2);
+  else if(mode==="project")projectDelta(dy*TOUCH_PAGE);
+  else if(mode==="about")aboutDelta(dy*TOUCH_PAGE);
   ttx=x; tty=y; tlast=now;
 },{passive:true});
 addEventListener("touchend",()=>{
   if(!tActive)return; tActive=false;
   if(performance.now()-tlast>90)return;          /* finger rested: no fling */
-  const FLING=170;                                /* ms of carried motion */
+  const FLING=130;                                /* ms of carried motion */
   if(mode==="strip"&&!collapsing()){
     const v=Math.abs(tvy)>Math.abs(tvx)?tvy:tvx;
-    stripDelta(Math.max(-900,Math.min(900,v*FLING*CFG.dragGain*1.1)));
+    stripDelta(Math.max(-700,Math.min(700,v*FLING*TOUCH_STRIP)));
   }else if(mode==="project"){
-    const d=tvy*FLING*2.2;
-    if(d>0||ps.t>0) projectDelta(Math.max(-1400,Math.min(1400,d)));
+    const d=tvy*FLING*TOUCH_PAGE;
+    if(d>0||ps.t>0) projectDelta(Math.max(-1100,Math.min(1100,d)));
+  }else if(mode==="about"){
+    aboutDelta(Math.max(-1100,Math.min(1100,tvy*FLING*TOUCH_PAGE)));
   }
 },{passive:true});
 addEventListener("keydown",e=>{
+  if(mode==="about"){ if(e.key==="Escape")closeAbout(); return; }
   if(mode==="preview"){ if(e.key==="Escape"||e.key==="ArrowUp"||e.key==="ArrowDown")closeFocus(); if(e.key==="Enter")enterProject(focusProj); return; }
   if(mode==="project"){ if(e.key==="Escape")closeFocus(); return; }
   if(mode!=="strip"||collapsing())return;
@@ -729,7 +826,7 @@ focusEl.addEventListener("click",()=>{ if(mode==="preview"&&!wasDrag()) enterPro
 function closeFocus(){
   /* if the intro layer is still mid-teardown (user scrolled within moments
      of the zoom landing), remove it NOW while the full-bleed hero still
-     covers it — it must never sit above the carousel during the collapse */
+     covers it - it must never sit above the carousel during the collapse */
   try{ if(intro&&intro.parentNode)intro.remove(); }catch(e){}
   proj.classList.remove("open"); backBtn.classList.remove("open");
   document.body.classList.remove("inproj");
@@ -738,7 +835,7 @@ function closeFocus(){
   pull=0; pullShown=0; topSince=null;
   f.t=0;                            /* clone glides back to its strip rect */
   /* the gesture that triggered this exit keeps emitting momentum events for
-     up to a second or two — none of them may leak into the carousel, or it
+     up to a second or two - none of them may leak into the carousel, or it
      kicks into motion mid-settle. Swallow wheel input until the gesture
      actually ends (a real pause), not merely until the animation is done. */
   swallowStrip=true; swallowStart=lastStripWheel=performance.now(); swallowDir=0;
@@ -778,7 +875,7 @@ function renderFocus(dt){
   const l=f.t===1?CFG.expandIn:CFG.expandOut;
   f.v=reduced?f.t:damp(f.v,f.t,l,dt);
   /* while collapsing, retarget fRect to the lead's LIVE strip rect every
-     frame — the strip may have been recentered (or still be gliding) since
+     frame - the strip may have been recentered (or still be gliding) since
      the rect was captured at click time, and the clone must land exactly
      on the real image wherever it is now, or the swap shows as a snap. */
   if(f.t===0&&focusProj!=null){
@@ -801,11 +898,11 @@ const tiles=[]; let focal=null;
          S_i = clear(leader) + rank_i * (pitch * spreadTiles)
      Spacing between neighbors is therefore  pitch + spread*(1-e):
      the queue starts stretched out offscreen, compresses monotonically,
-     and lands at exact pitch — uneven -> even, never overlapping,
+     and lands at exact pitch - uneven -> even, never overlapping,
      trailing tiles visibly faster (they cover more ground in the same time). */
   const vw=innerWidth, vh=innerHeight;
   /* tiles share the VIEWPORT's aspect ratio, so the focal tile can expand
-     to full-bleed without its cover-crop ever changing — the zoom is a pure
+     to full-bleed without its cover-crop ever changing - the zoom is a pure
      uniform scale of the exact same picture. */
   /* phone: fewer, larger tiles (3 rows at 1/3.2 of the screen) so the wall
      reads as photographs rather than thumbnails; desktop/tablet unchanged */
@@ -819,7 +916,7 @@ const tiles=[]; let focal=null;
      as it lands (the same uneven -> even signature, transposed). Columns
      are brick-staggered by half a tile vertically. */
   const pitchY=tileH+gap;
-  /* PASS 1 — lay out the grid (one cover column each side, so the
+  /* PASS 1 - lay out the grid (one cover column each side, so the
      centering shift can never expose bare background at an edge) and pick
      the tile nearest the viewport center as the focal. */
   let li=0, best=1e9;
@@ -841,7 +938,7 @@ const tiles=[]; let focal=null;
     }
     colsArr.push({col,dir,c});
   }
-  /* PASS 2 — shift the WHOLE wall so the focal tile's final rect sits
+  /* PASS 2 - shift the WHOLE wall so the focal tile's final rect sits
      EXACTLY at the viewport center. The Ken Burns then becomes a pure
      centered scale: the image the camera dives into never drifts
      on its way to full-bleed. */
@@ -851,7 +948,7 @@ const tiles=[]; let focal=null;
     rec.x+=dxC; rec.fy+=dyC;
     Object.assign(rec.el.style,{left:rec.x+"px",top:"0px",width:tileW+"px",height:tileH+"px",opacity:"0"});
   });
-  /* PASS 3 — per-column travel distances (computed AFTER the shift):
+  /* PASS 3 - per-column travel distances (computed AFTER the shift):
      leader clears the screen, the queue trails with extra spacing that
      melts away as they land: start gap = pitch+spread -> final gap = pitch */
   colsArr.forEach(({col,dir,c})=>{
@@ -866,7 +963,7 @@ const tiles=[]; let focal=null;
   });
   tiles.forEach(rec=>{
     if(rec===focal){
-      /* the focal tile is never drawn — the hero element (#focus) plays its
+      /* the focal tile is never drawn - the hero element (#focus) plays its
          part from the very first frame, so there is no promotion moment and
          the zoom can overlap the slide-in freely. Keep the element for its
          layout math only. */
@@ -876,6 +973,24 @@ const tiles=[]; let focal=null;
     }
   });
   focal.rect={x:focal.x,y:focal.fy,w:tileW,h:tileH};
+})();
+/* Dead-time finder: step the SAME choreography math forward and find the
+   first moment any tile (or the hero) would overlap the screen. Starting
+   the clock ~90ms before that removes the empty grey wait after 100%
+   without changing a single visible frame of the motion. */
+const INTRO_SKIP=(()=>{
+  if(reduced)return 0;
+  const vw=innerWidth, vh=innerHeight, th=focal.rect.h, tw=focal.rect.w;
+  const end=CFG.introBlankMs+CFG.introLoadMs;
+  for(let t=0;t<end;t+=10){
+    for(const rec of tiles){
+      const lp=(t-CFG.introBlankMs-rec.rowDelay)/Math.max(200,CFG.introLoadMs-rec.rowDelay);
+      if(lp<=0)continue;
+      const y=rec.fy+rec.dir*rec.S*(1-tileEase(lp));
+      if(y<vh-1&&y+th>1&&rec.x<vw-1&&rec.x+tw>1) return Math.max(0,t-90);
+    }
+  }
+  return 0;
 })();
 const cam={s:1,tx:0,ty:0,sT:1,txT:0,tyT:0};
 /* camera target: map the focal tile's FINAL rect exactly onto the viewport
@@ -892,13 +1007,13 @@ focusEl.style.display="block";
 focusEl.style.zIndex="82";               /* above the intro wall */
 focusEl.style.visibility="hidden";       /* until its row starts moving */
 /* COLD-CACHE GUARD: on a first visit the wall must not start sliding until
-   its images have actually decoded — an undecoded tile paints as nothing
+   its images have actually decoded - an undecoded tile paints as nothing
    (a dark hole in the wall). Hold the intro clock until every image is
    ready, with a hard cap so a broken file can never stall the site. */
 let introStart=performance.now(), introReady=false;
 {
   /* the centered counter shows REAL load progress, quantized to jumps of
-     17 so it snaps upward instead of crawling — and nothing on the wall
+     17 so it snaps upward instead of crawling - and nothing on the wall
      moves until every image is decoded (hard 3s cap). */
   const urls=[...new Set(WALL)];
   let done=0, loaded=false, shown=0;
@@ -910,7 +1025,7 @@ let introStart=performance.now(), introReady=false;
   const tick=()=>{
     const t=target();
     if(shown<t){ shown=Math.min(t, shown+17); pctEl.textContent=shown+"%"; }
-    if(shown>=100&&loaded){ introReady=true; setTimeout(()=>pctEl.style.opacity=0,250); return; }
+    if(shown>=100&&loaded){ introReady=true; setTimeout(()=>pctEl.style.opacity=0,120); return; }
     setTimeout(tick,STEP_MS);
   };
   setTimeout(tick,STEP_MS);
@@ -979,9 +1094,9 @@ function renderStrip(dt){
     q.part.style.transform=`translate3d(${-off*CFG.parallax}%,0,0)`;
   });
   /* counter + filmstrip highlight: track the OPEN project when one is open,
-     else the nearest cluster — keeps the bottom-right preview in sync */
+     else the nearest cluster - keeps the bottom-right preview in sync */
   const cur = mode==="strip" ? nearest() : focusProj;
-  idxEl.textContent=(cur+1)+" — "+N;
+  idxEl.textContent=(cur+1)+" / "+N;
   stripBtns.forEach((b,i)=>b.classList.toggle("on",i===cur));
 }
 
@@ -990,7 +1105,9 @@ function frame(now){
 
   if(mode==="intro"){
     if(!introReady)introStart=now;       /* hold at t=0 until images decoded */
-    const tAbs=now-introStart;
+    /* INTRO_SKIP jumps past the stretch where every tile is still off
+       screen, so motion appears the moment the counter hits 100% */
+    const tAbs=now-introStart+INTRO_SKIP;
     tiles.forEach(rec=>{
       if(rec===focal)return;             /* the hero plays the focal tile */
       const lp=(tAbs-CFG.introBlankMs-rec.rowDelay)/Math.max(200,CFG.introLoadMs-rec.rowDelay);
@@ -1024,21 +1141,21 @@ function frame(now){
            the project page proper. */
         document.getElementById("stage").classList.add("on");
         s.c=s.t=0;
-        /* the hero is ALREADY full-bleed — only retarget fRect to the strip
+        /* the hero is ALREADY full-bleed - only retarget fRect to the strip
            frame (for the later collapse FLIP). At e=1 fRect has zero weight,
            so this changes nothing on screen. */
         fRect={x:(innerWidth-pics[0].w)/2, y:(innerHeight-pics[0].h)/2, w:pics[0].w, h:pics[0].h};
         /* HANDOFF IS A NON-EVENT. The hero covers the whole viewport, so
-           nothing behind it can show — but tearing down ~140 wall tiles
+           nothing behind it can show - but tearing down ~140 wall tiles
            synchronously here costs a layout+composite spike, i.e. a dropped
            frame at the exact moment the zoom lands, which reads as a snap.
            So this frame does only compositor-cheap work: fade the (hidden)
            intro layer out, and defer the actual DOM teardown to idle time,
-           when the layer is both covered AND at opacity 0 — provably
+           when the layer is both covered AND at opacity 0 - provably
            unpaintable, so removing it cannot change a single pixel. */
         intro.style.pointerEvents="none";
         intro.style.opacity="0";
-        /* CRITICAL ORDER: the hero's z-index reset drops it to 64 — BELOW
+        /* CRITICAL ORDER: the hero's z-index reset drops it to 64 - BELOW
            the intro's 80. The lingering (fading) dark sheet must therefore
            drop underneath the hero in the same frame, or it covers the
            screen for its fade = a black flash. z 1 keeps it under the hero
@@ -1062,6 +1179,7 @@ function frame(now){
     renderStrip(dt);
     renderFocus(dt);
   }
+  else if(mode==="about"){ renderAbout(dt); }
   else if(mode==="project"){
     ps.c=reduced?ps.t:damp(ps.c,ps.t,CFG.pageScroll,dt);
     if(Math.abs(ps.t-ps.c)<.1)ps.c=ps.t;
@@ -1094,7 +1212,7 @@ function enterProject(i){
   const imgs=document.getElementById("p-imgs");
   imgs.innerHTML=p.comps.map(c=>`<div class="p-img" style="background-image:url('${c}')"></div>`).join("");
   buildGate(p);
-  document.getElementById("p-count").textContent=(i+1)+" — "+N;
+  document.getElementById("p-count").textContent=(i+1)+" / "+N;
   ps.c=ps.t=0; pull=0; pullShown=0; topSince=null;
   pScroll.style.transform="translate3d(0,0,0)";
   proj.classList.add("open"); backBtn.classList.add("open");
@@ -1168,7 +1286,7 @@ function buildGate(p){
   if(unlockKey){ revealLocked(p); return; }
   if(stored){ tryPassword(stored).then(ok=>{ if(ok)revealLocked(p); }); }
   gate=document.createElement("div"); gate.id="p-gate";
-  gate.innerHTML=`<div class="k">Client work — enter password for the full case study</div>
+  gate.innerHTML=`<div class="k">Client work. Enter the password for the full case study</div>
     <form id="p-gate-form"><input type="password" placeholder="Password" autocomplete="off">
     <button type="submit">Unlock</button></form><div class="msg"></div>`;
   box.after(gate);
@@ -1188,6 +1306,37 @@ document.getElementById("p-next").addEventListener("click",()=>{
   s.c=s.t=clusterCenter[n]-clusterCenter[0];
   openFocus(n);
 });
+/* ============ About ============
+   Its own damped scroll (same feel as project pages); remembers the mode it
+   was opened from and returns there. Rows reveal with a stagger on open. */
+const aboutEl=document.getElementById("about"), abIn=document.getElementById("ab-in");
+const aboutLink=document.getElementById("c-about");
+let aboutPrev=null, abT=0, abC=0, abMax=0;
+[...aboutEl.querySelectorAll(".ab-r")].forEach((el,i)=>el.style.setProperty("--d",Math.min(i,12)*55+"ms"));
+function aboutDelta(d){ abT=Math.max(0,Math.min(abMax,abT+d)); }
+function renderAbout(dt){
+  abC=reduced?abT:damp(abC,abT,CFG.pageScroll,dt);
+  if(Math.abs(abT-abC)<.1)abC=abT;
+  abIn.style.transform=`translate3d(0,${-abC}px,0)`;
+}
+function openAbout(){
+  if(mode==="about"||mode==="intro")return;
+  aboutPrev=mode; mode="about";
+  abT=abC=0; abIn.style.transform="translate3d(0,0,0)";
+  aboutEl.classList.add("on"); aboutEl.setAttribute("aria-hidden","false");
+  document.body.classList.add("aboutopen");
+  aboutLink.textContent="Close";
+  requestAnimationFrame(()=>{ abMax=Math.max(0,abIn.scrollHeight-innerHeight); });
+}
+function closeAbout(){
+  if(mode!=="about")return;
+  mode=aboutPrev||"strip"; aboutPrev=null;
+  aboutEl.classList.remove("on"); aboutEl.setAttribute("aria-hidden","true");
+  document.body.classList.remove("aboutopen");
+  aboutLink.textContent="About / Contact";
+  lastInput=performance.now();
+}
+aboutLink.addEventListener("click",e=>{ e.preventDefault(); mode==="about"?closeAbout():openAbout(); });
 /* touch browsers (iOS Safari especially) size 100vh to the viewport with
    the toolbars hidden, so the project text started below a gap under the
    hero. Pin the spacer to the real visible height on touch devices only. */
@@ -1196,6 +1345,7 @@ function fitSpacer(){ if(matchMedia("(pointer:coarse)").matches) pSpacerEl.style
 fitSpacer();
 addEventListener("resize",()=>{
   fitSpacer();
+  if(mode==="about")abMax=Math.max(0,abIn.scrollHeight-innerHeight);
   layoutStrip();
   if(mode==="project"){ ps.max=Math.max(0,pScroll.scrollHeight-innerHeight); buildMinimap(); }
 });
