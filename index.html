@@ -207,6 +207,8 @@ body.inproj #c-name{ opacity:0; pointer-events:none }
 .ab-it .m, .ab-list div{ font-size:12.8px; line-height:1.33; color:#666667; margin-top:.35em }
 .ab-it .t + .m{ margin-top:.7em }
 .ab-list{ margin-left:min(82px,8vw) } .ab-list div{ margin-top:0 }
+.ab-foot{ margin-top:clamp(110px,18vh,200px); font-size:11px; line-height:1.5; letter-spacing:.02em; color:#666667 }
+.ab-foot a{ color:#8a8a8b }
 /* reveal: each row rises in on open, staggered */
 .ab-r{ opacity:0; transform:translateY(22px);
   transition:opacity 800ms cubic-bezier(.2,.7,.2,1), transform 900ms cubic-bezier(.2,.7,.2,1);
@@ -303,13 +305,10 @@ body.aboutopen #strip, body.aboutopen #minimap, body.aboutopen #backBtn, body.ab
     <section>
       <h3 class="ab-r">Get In Touch</h3>
       <div class="ab-it ab-r"><div class="t"><a href="mailto:jesse.gallant4@gmail.com">Email</a></div><div class="m">jesse.gallant4@gmail.com</div></div>
+      <div class="ab-it ab-r"><div class="t"><a href="tel:+19178178544">Phone</a></div><div class="m">917 817 8544</div></div>
     </section>
 
-    <section>
-      <h3 class="ab-r">Credits</h3>
-      <div class="ab-it ab-r"><div class="t"><a href="https://camillemormal.com" target="_blank" rel="noopener">Camille Mormal</a></div><div class="m">Design and interaction homage</div></div>
-      <div class="ab-it ab-r"><div class="t">Fraunces &amp; Instrument Sans</div><div class="m">Type</div></div>
-    </section>
+    <div class="ab-foot ab-r">Design and interaction homage to <a href="https://camillemormal.com" target="_blank" rel="noopener">Camille Mormal</a> · Type: Fraunces and Instrument Sans</div>
   </div>
 </div>
 <div id="minimap"><div id="mm-page"></div><div id="mm-win"></div></div>
