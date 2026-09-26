@@ -901,18 +901,27 @@ let introStart=performance.now(), introReady=false;
      17 so it snaps upward instead of crawling — and nothing on the wall
      moves until every image is decoded (hard 3s cap). */
   const urls=[...new Set(WALL)];
-  let done=0;
-  const show=()=>{ pctEl.textContent=Math.min(100,Math.ceil(done/urls.length*100/17)*17)+"%"; };
-  show();
+  let done=0, loaded=false, shown=0;
+  /* pacing: the counter climbs one 17-step at most every STEP_MS, so even
+     a warm cache takes ~0.65s to count up instead of flashing to 100 */
+  const STEP_MS=110;
+  const target=()=>loaded?100:Math.min(100,Math.ceil(done/urls.length*100/17)*17);
+  pctEl.textContent="0%";
+  const tick=()=>{
+    const t=target();
+    if(shown<t){ shown=Math.min(t, shown+17); pctEl.textContent=shown+"%"; }
+    if(shown>=100&&loaded){ introReady=true; setTimeout(()=>pctEl.style.opacity=0,250); return; }
+    setTimeout(tick,STEP_MS);
+  };
+  setTimeout(tick,STEP_MS);
   const ps=urls.map(u=>new Promise(res=>{
     const im=new Image();
-    const fin=()=>{ done++; show(); res(); };
+    const fin=()=>{ done++; res(); };
     im.onload=()=>{ (im.decode?im.decode().catch(()=>{}):Promise.resolve()).then(fin); };
     im.onerror=fin; im.src=u;
   }));
   Promise.race([Promise.all(ps), new Promise(r=>setTimeout(r,3000))])
-    .then(()=>{ pctEl.textContent="100%"; introReady=true;
-      setTimeout(()=>pctEl.style.opacity=0,250); });
+    .then(()=>{ loaded=true; });
 }
 
 /* ============ minimap ============ */
