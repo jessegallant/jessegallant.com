@@ -147,6 +147,46 @@ body.inproj #c-name{ opacity:0; pointer-events:none }
 #panel .btns button:hover{ background:rgba(236,235,231,.2) }
 #panel .sect{ margin-top:8px; padding-top:6px; border-top:1px solid rgba(236,235,231,.12);
   color:var(--dim); letter-spacing:.12em; text-transform:uppercase; font-size:9.5px }
+/* ================= PHONE (max-width 700px) =================
+   Everything below applies to narrow screens only. Desktop and tablet
+   render the exact web layout; none of these rules reach them. */
+@media (max-width:700px){
+  #c-name,#c-about{ top:18px }
+  #c-name,#backBtn{ left:18px } #c-about{ right:18px }
+  #backBtn{ top:18px }
+  #c-index{ left:18px; bottom:34px }
+  #strip{ right:18px; bottom:30px; gap:4px }
+  #strip button{ width:34px; height:24px }
+  #c-credit{ bottom:9px; white-space:nowrap; font-size:.5rem; letter-spacing:.06em }
+  /* inside a project the page footer carries the count; the fixed chrome
+     would sit on top of the text */
+  #c-index,#c-credit{ transition:opacity 350ms ease }
+  body.inproj #c-index, body.inproj #c-credit{ opacity:0; pointer-events:none }
+  #minimap{ width:16px; right:6px; height:52vh }
+  #p-body .p-head{ grid-template-columns:1fr; gap:18px; padding:56px 34px 26px 20px }
+  #p-body h2{ font-size:2.1rem }
+  #p-body p{ max-width:none; font-size:.95rem }
+  #p-body .p-img{ margin:0 34px 14px 20px }
+  #p-locked p{ margin:6px 34px 18px 20px; font-size:.95rem }
+  #p-gate{ margin:10px 34px 36px 20px; padding:22px 14px }
+  #p-gate .k{ font-size:.6rem; letter-spacing:.12em; line-height:1.6 }
+  #p-gate form{ display:flex }
+  #p-gate input{ flex:1; min-width:0; width:auto }
+  #p-body .p-foot{ padding:18px 34px 48px 20px }
+  /* text scrolling up under Back / About: fade it out beneath the header */
+  body.inproj::before{ content:""; position:fixed; left:0; right:0; top:0; height:64px;
+    z-index:66; pointer-events:none;
+    background:linear-gradient(var(--bg) 45%, rgba(20,20,20,0)) }
+}
+/* ================= TOUCH (phones AND tablets) =================
+   Behavior only, no layout: stop the browser's own pan/zoom/rubber-band
+   so the page's gestures are the only ones running. */
+@media (pointer:coarse){
+  html,body{ overscroll-behavior:none; touch-action:none }
+  #panel .body{ touch-action:pan-y }
+  /* iOS zooms the page when focusing an input under 16px */
+  #p-gate input{ font-size:16px }
+}
 </style>
 </head>
 <body class="pre">
@@ -223,6 +263,10 @@ const N=P.length;
 /* every real image, for the intro wall */
 const WALL=P.flatMap(p=>[p.lead,...p.comps]);
 const reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
+/* PHONE = narrow screens only. Every phone-specific layout rule keys off
+   this (and the matching CSS @media block), so tablets and desktop run the
+   exact web layout untouched. */
+const PHONE=()=>matchMedia("(max-width: 700px)").matches;
 const damp=(c,t,l,dt)=> c+(t-c)*(1-Math.exp(-l*dt));
 const easeOutCubic=t=>1-Math.pow(1-Math.max(0,Math.min(1,t)),3);
 const easeInOut=t=>{ t=Math.max(0,Math.min(1,t)); return t<.5 ? 4*t*t*t : 1-Math.pow(-2*t+2,3)/2; };
@@ -515,9 +559,16 @@ P.forEach((p,pi)=>{
 function layoutStrip(){
   /* Uniform frames, evenly spaced, laid out with one cursor. Frame i's
      center = viewportCenter + i*pitch at s=0; scrolling translates -s.c. */
-  const h=CFG.leadH*innerHeight/100;
-  const w=h*CFG.frameAR;
-  const pitch=w+CFG.frameGapVw*innerWidth/100;
+  let h=CFG.leadH*innerHeight/100;
+  let w=h*CFG.frameAR;
+  let gapPx=CFG.frameGapVw*innerWidth/100;
+  if(PHONE()){
+    /* phone: the frame is the star; neighbors just peek in at the edges */
+    h=Math.max(h,0.6*innerHeight); w=h*CFG.frameAR;
+    if(w>0.74*innerWidth){ w=0.74*innerWidth; h=w/CFG.frameAR; }
+    gapPx=Math.max(gapPx,10);
+  }
+  const pitch=w+gapPx;
   /* inner-image overscan grows with the parallax setting so the image can
      never slide past its own edges, however hard the parallax is pushed */
   const ov=Math.min(48,6+CFG.parallax*.7);
@@ -602,6 +653,9 @@ addEventListener("pointermove",e=>{
   if(!drag)return;
   const dx=tx-e.clientX,dy=ty-e.clientY;
   dragMoved+=Math.abs(dx)+Math.abs(dy);
+  /* touch is driven ONLY by the touch handlers below; phones and tablets
+     fire pointer events for fingers too, which used to double every swipe */
+  if(e.pointerType==="touch"){ tx=e.clientX;ty=e.clientY; return; }
   if(mode==="strip"){ if(!collapsing())stripDelta((dx+dy)*CFG.dragGain); }
   else if(mode==="preview"&&(Math.abs(dx)+Math.abs(dy)>4)){ closeFocus(); }
   else if(mode==="project")projectDelta(dy*2);
@@ -610,14 +664,37 @@ addEventListener("pointermove",e=>{
 addEventListener("pointerup",()=>drag=false);
 /* a release at the end of a real drag must not read as a click on an image */
 const wasDrag=()=>dragMoved>6;
-addEventListener("touchstart",e=>{tx=e.touches[0].clientX;ty=e.touches[0].clientY;},{passive:true});
-addEventListener("touchmove",e=>{
+/* ---- touch: own coordinates (never shared with the pointer handler) and
+   a release fling, so a flick keeps gliding like native scrolling instead
+   of stopping dead when the finger lifts ---- */
+let ttx=0,tty=0,tvx=0,tvy=0,tlast=0,tActive=false;
+addEventListener("touchstart",e=>{
   if(e.target.closest("#panel"))return;
-  const dx=tx-e.touches[0].clientX,dy=ty-e.touches[0].clientY;
+  tActive=true; ttx=e.touches[0].clientX; tty=e.touches[0].clientY;
+  tvx=tvy=0; tlast=performance.now();
+},{passive:true});
+addEventListener("touchmove",e=>{
+  if(!tActive||e.target.closest("#panel"))return;
+  const x=e.touches[0].clientX, y=e.touches[0].clientY, now=performance.now();
+  const dx=ttx-x, dy=tty-y, dt=Math.max(1,now-tlast);
+  /* smoothed finger velocity, px per ms */
+  tvx=tvx*.6+(dx/dt)*.4; tvy=tvy*.6+(dy/dt)*.4;
   if(mode==="strip"){ if(!collapsing())stripDelta((Math.abs(dy)>Math.abs(dx)?dy:dx)*CFG.dragGain*1.1); }
-  else if(mode==="preview"){ closeFocus(); }
+  else if(mode==="preview"){ if(Math.abs(dx)+Math.abs(dy)>4)closeFocus(); }
   else if(mode==="project")projectDelta(dy*2.2);
-  tx=e.touches[0].clientX;ty=e.touches[0].clientY;
+  ttx=x; tty=y; tlast=now;
+},{passive:true});
+addEventListener("touchend",()=>{
+  if(!tActive)return; tActive=false;
+  if(performance.now()-tlast>90)return;          /* finger rested: no fling */
+  const FLING=170;                                /* ms of carried motion */
+  if(mode==="strip"&&!collapsing()){
+    const v=Math.abs(tvy)>Math.abs(tvx)?tvy:tvx;
+    stripDelta(Math.max(-900,Math.min(900,v*FLING*CFG.dragGain*1.1)));
+  }else if(mode==="project"){
+    const d=tvy*FLING*2.2;
+    if(d>0||ps.t>0) projectDelta(Math.max(-1400,Math.min(1400,d)));
+  }
 },{passive:true});
 addEventListener("keydown",e=>{
   if(mode==="preview"){ if(e.key==="Escape"||e.key==="ArrowUp"||e.key==="ArrowDown")closeFocus(); if(e.key==="Enter")enterProject(focusProj); return; }
@@ -730,8 +807,10 @@ const tiles=[]; let focal=null;
   /* tiles share the VIEWPORT's aspect ratio, so the focal tile can expand
      to full-bleed without its cover-crop ever changing — the zoom is a pure
      uniform scale of the exact same picture. */
-  const ROWS=4;
-  const tileW=vw/4.6, tileH=vh/4.6;
+  /* phone: fewer, larger tiles (3 rows at 1/3.2 of the screen) so the wall
+     reads as photographs rather than thumbnails; desktop/tablet unchanged */
+  const ROWS=PHONE()?3:4, DIV=PHONE()?3.2:4.6;
+  const tileW=vw/DIV, tileH=vh/DIV;
   const gap=(vh-ROWS*tileH)/(ROWS+1);
   const pitch=tileW+gap;
   /* VERTICAL choreography: the wall is organized in COLUMNS. Even columns
@@ -1100,7 +1179,14 @@ document.getElementById("p-next").addEventListener("click",()=>{
   s.c=s.t=clusterCenter[n]-clusterCenter[0];
   openFocus(n);
 });
+/* touch browsers (iOS Safari especially) size 100vh to the viewport with
+   the toolbars hidden, so the project text started below a gap under the
+   hero. Pin the spacer to the real visible height on touch devices only. */
+const pSpacerEl=document.getElementById("p-spacer");
+function fitSpacer(){ if(matchMedia("(pointer:coarse)").matches) pSpacerEl.style.height=innerHeight+"px"; }
+fitSpacer();
 addEventListener("resize",()=>{
+  fitSpacer();
   layoutStrip();
   if(mode==="project"){ ps.max=Math.max(0,pScroll.scrollHeight-innerHeight); buildMinimap(); }
 });
