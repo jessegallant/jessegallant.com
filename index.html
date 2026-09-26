@@ -230,6 +230,34 @@ body.aboutopen #strip, body.aboutopen #minimap, body.aboutopen #backBtn, body.ab
 </style>
 </head>
 <body class="pre">
+<script>
+/* Runs before the main script and independently of it:
+   1) hidden route to the prototype lab: Shift+L, or type "lab" (not while
+      typing in a field); on phones, tap the name 5 times
+   2) a page opened in a zero-size window (a hidden or background frame)
+      cannot lay out the intro wall, so wait for a real size and reload */
+(()=>{
+  const go=()=>{ location.href="/lab/"; };
+  let buf="";
+  addEventListener("keydown",e=>{
+    const t=e.target;
+    if(t&&(t.tagName==="INPUT"||t.tagName==="TEXTAREA"))return;
+    if(e.shiftKey&&(e.key==="L"||e.key==="l")){ go(); return; }
+    if(e.key&&e.key.length===1){ buf=(buf+e.key.toLowerCase()).slice(-3); if(buf==="lab")go(); }
+  });
+  let taps=[];
+  addEventListener("click",e=>{
+    if(!e.target.closest||!e.target.closest("#c-name"))return;
+    const t=performance.now(); taps=taps.filter(x=>t-x<2000); taps.push(t); if(taps.length>=5)go();
+  });
+  if(innerWidth<10||innerHeight<10){
+    addEventListener("resize",function f(){
+      if(innerWidth>=10&&innerHeight>=10){ removeEventListener("resize",f); location.reload(); }
+    });
+  }
+})();
+</script>
+
 
 <div id="intro"><div id="iworld"></div></div>
 <div id="pct">0%</div>
@@ -1348,22 +1376,6 @@ addEventListener("resize",()=>{
   layoutStrip();
   if(mode==="project"){ ps.max=Math.max(0,pScroll.scrollHeight-innerHeight); buildMinimap(); }
 });
-
-/* hidden route to the prototype lab: Shift+L, or type "lab" anywhere
-   (not while typing in a field); on phones, tap the name 5 times */
-(()=>{
-  const go=()=>{ location.href="/lab/"; };
-  let buf="";
-  addEventListener("keydown",e=>{
-    const t=e.target;
-    if(t&&(t.tagName==="INPUT"||t.tagName==="TEXTAREA"))return;
-    if(e.shiftKey&&(e.key==="L"||e.key==="l")){ go(); return; }
-    if(e.key&&e.key.length===1){ buf=(buf+e.key.toLowerCase()).slice(-3); if(buf==="lab")go(); }
-  });
-  const nm=document.getElementById("c-name"); let taps=[];
-  if(nm)nm.addEventListener("click",()=>{ const t=performance.now();
-    taps=taps.filter(x=>t-x<2000); taps.push(t); if(taps.length>=5)go(); });
-})();
 </script>
 </body>
 </html>
